@@ -52,9 +52,6 @@ export default function TransactionForm({
             return;
         }
 
-        // Convert date from DD/MM/YYYY to ISO format for storage
-        const [day, month, year] = date.split('/');
-        const isoDate = `${year}-${month}-${day}`;
 
         try {
             await onSubmit(e); // Call the onSubmit handler from props

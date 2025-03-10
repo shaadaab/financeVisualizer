@@ -384,6 +384,6 @@ export default function Home() {
   );
 }
 
-function setError(arg0: string) {
+function setError(_p0?: string) {
   throw new Error('Function not implemented.');
 }
