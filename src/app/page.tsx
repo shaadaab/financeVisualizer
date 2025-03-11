@@ -26,6 +26,28 @@ export default function Home() {
   const [monthlyBreakdown, setMonthlyBreakdown] = useState<Record<string, number>>({});
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
+  const handleResetAllBudgets = async () => {
+    const confirmReset = confirm('Are you sure you want to reset all budgets? This action cannot be undone.');
+    if (!confirmReset) return;
+
+    try {
+      const response = await fetch('/api/budgets', {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reset budgets.');
+      }
+
+      // Refresh budgets
+      setRefreshKey((prev) => prev + 1);
+      alert('All budgets have been reset successfully!');
+    } catch (error) {
+      console.error('Error resetting budgets:', error);
+      alert('Failed to reset budgets. Please try again.');
+    }
+  };
+
   const fetchMonthlyBreakdown = async (category: string) => {
     try {
       const response = await fetch(`/api/transactions/category/${category}/monthly-breakdown`);
@@ -199,73 +221,99 @@ export default function Home() {
     .slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 p-6">
-      <h1 className="text-4xl font-bold text-center mb-8 text-white">Personal Finance Visualizer</h1>
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-4 md:p-8">
+      <h1 className="text-4xl my-10 md:text-6xl font-bold text-center md:mb-10 text-white">
+        Personal Finance Visualizer📊
+      </h1>
 
       {/* First Row: Dashboard Cards */}
-      <div>
+      <div className="space-y-6 md:space-y-8">
         {/* Total Expenses Card (Top) */}
-        <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Total Expenses</h2>
-          <p className="text-2xl">{formatIndianCurrency(totalExpenses)}</p>
+        <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700 w-full md:w-2/5 mx-auto">
+          <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6 text-center md:text-center">
+            Total Expenses
+          </h2>
+          <p className="text-2xl md:text-3xl text-teal-400 text-center md:text-center">
+            {formatIndianCurrency(totalExpenses)}
+          </p>
         </div>
 
         {/* Category Breakdown and Most Recent Transactions Cards (Below) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {/* Category Breakdown Card */}
-          <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">Category Breakdown</h2>
-            <ul>
+          <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Category Breakdown</h2>
+            <ul className="space-y-2 md:space-y-3"> {/* Reduced gap */}
               {/* Header Row */}
-              <li className="grid grid-cols-2 gap-4 font-semibold text-gray-400 pb-2 border-b border-gray-700">
+              <li className="grid grid-cols-2 gap-4 font-semibold text-gray-400 pb-2 md:pb-4 border-b border-gray-700">
                 <span>Category</span>
                 <span className="text-right">Amount</span>
               </li>
 
               {/* Category Rows */}
               {Object.entries(categoryBreakdown).map(([category, amount]) => (
-                <li key={category} className="grid grid-cols-2 gap-4 items-center py-2">
+                <li key={category} className="grid grid-cols-2 gap-4 items-center py-1 md:py-2"> {/* Reduced padding */}
                   <span className="truncate">{category}</span>
-                  <span
-                    className="text-right cursor-pointer hover:underline"
-                    onClick={() => fetchMonthlyBreakdown(category)}
-                  >
-                    {formatIndianCurrency(amount)}
-                  </span>
+                  <div className="flex items-center justify-end gap-2 md:gap-3">
+                    <span
+                      className="text-right cursor-pointer text-teal-400 hover:underline"
+                      onClick={() => fetchMonthlyBreakdown(category)}
+                    >
+                      {formatIndianCurrency(amount)}
+                    </span>
+                    {/* Info Icon */}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 md:h-5 md:w-5 text-gray-400 cursor-pointer hover:text-gray-200"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      onClick={() => fetchMonthlyBreakdown(category)}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
                 </li>
               ))}
             </ul>
 
             {/* Note */}
-            <p className="text-sm text-gray-400 mt-4">
+            <p className="text-sm text-gray-400 mt-4 md:mt-6">
               *Click on the amount to expand the details.
             </p>
           </div>
 
           {/* Popup Overlay */}
           {isPopupVisible && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-              <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700 w-full max-w-md">
-                <h2 className="text-xl font-semibold mb-4">Monthly Breakdown for {selectedCategory}</h2>
-                <ul>
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 md:p-6">
+              <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700 w-full max-w-md">
+                <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">
+                  Monthly Breakdown for {selectedCategory}
+                </h2>
+                <ul className="space-y-3 md:space-y-4">
                   {/* Header Row */}
-                  <li className="grid grid-cols-2 gap-4 font-semibold text-gray-400 pb-2 border-b border-gray-700">
+                  <li className="grid grid-cols-2 gap-4 font-semibold text-gray-400 pb-2 md:pb-4 border-b border-gray-700">
                     <span>Month</span>
                     <span className="text-right">Amount</span>
                   </li>
 
                   {/* Monthly Breakdown Rows */}
                   {Object.entries(monthlyBreakdown).map(([month, amount]) => (
-                    <li key={month} className="grid grid-cols-2 gap-4 items-center py-2">
+                    <li key={month} className="grid grid-cols-2 gap-4 items-center py-2 md:py-3">
                       <span className="truncate">{month}</span>
-                      <span className="text-right">₹{amount.toFixed(2)}</span>
+                      <span className="text-right text-teal-400">₹{amount.toFixed(2)}</span>
                     </li>
                   ))}
                 </ul>
 
                 {/* Go Back Button */}
                 <button
-                  className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                  className="mt-4 md:mt-6 w-full bg-blue-600 text-white py-2 md:py-3 rounded-md hover:bg-blue-700"
                   onClick={() => setIsPopupVisible(false)}
                 >
                   Go Back
@@ -275,11 +323,11 @@ export default function Home() {
           )}
 
           {/* Most Recent Transactions Card */}
-          <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">Most Recent Transactions</h2>
-            <ul>
+          <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Most Recent Transactions</h2>
+            <ul className="space-y-3 md:space-y-4">
               {/* Header Row */}
-              <li className="grid grid-cols-3 gap-4 font-semibold text-gray-400 pb-2 border-b border-gray-700">
+              <li className="grid grid-cols-3 gap-4 font-semibold text-gray-400 pb-2 md:pb-4 border-b border-gray-700">
                 <span>Description</span>
                 <span className="text-right">Amount</span>
                 <span className="text-right">Date</span>
@@ -287,9 +335,9 @@ export default function Home() {
 
               {/* Transaction Rows */}
               {mostRecentTransactions.map((transaction) => (
-                <li key={transaction._id?.toString()} className="grid grid-cols-3 gap-4 items-center py-2">
+                <li key={transaction._id?.toString()} className="grid grid-cols-3 gap-4 items-center py-2 md:py-2">
                   <span className="truncate">{transaction.description}</span>
-                  <span className="text-right">{formatIndianCurrency(transaction.amount)}</span>
+                  <span className="text-right text-teal-400">{formatIndianCurrency(transaction.amount)}</span>
                   <span className="text-sm text-gray-400 text-right">
                     {new Date(transaction.date).toLocaleDateString('en-GB')}
                   </span>
@@ -297,13 +345,15 @@ export default function Home() {
               ))}
             </ul>
           </div>
+
         </div>
       </div>
 
       {/* Second Row: Transaction and Budget Forms (Side by Side) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-10 mt-8">
         {/* Transaction Form */}
-        <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
+        <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+          <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Add Transactions</h2>
           <TransactionForm
             onSubmit={handleSubmit}
             amount={amount}
@@ -319,7 +369,8 @@ export default function Home() {
         </div>
 
         {/* Budget Form */}
-        <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
+        <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+          <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Add Budget</h2>
           <BudgetForm
             onSubmit={handleAddBudget}
             category={budgetCategory}
@@ -333,36 +384,42 @@ export default function Home() {
       </div>
 
       {/* Third Row: Transaction List and Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {/* Transaction List */}
-        <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
-          <TransactionList
-            transactions={transactions}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
+        <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+          <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Transactions List</h2>
+          <TransactionList transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} />
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:gap-8">
           {/* Monthly Expenses Chart */}
-          <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
+          <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Monthly Expenses Graph</h2>
             <MonthlyExpensesChart transactions={transactions} />
           </div>
 
           {/* Category Pie Chart */}
-          <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
+          <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Expense Distribution by Category</h2>
             <CategoryPieChart transactions={transactions} />
           </div>
 
           {/* Budget vs Actual Chart */}
-          <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
+          <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Budget v/s Expenditure</h2>
             <BudgetVsActualChart transactions={transactions} budgets={budgets} />
+            <button
+              onClick={handleResetAllBudgets}
+              className="mt-4 w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
+            >
+              Reset All Budgets
+            </button>
           </div>
 
           {/* Spending Insights */}
-          <div className="bg-gray-800 p-6 rounded-2xl shadow-md border border-gray-700">
-            <h2 className="text-xl font-semibold mb-4">Spending Insights</h2>
+          <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
+            <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Spending Insights</h2>
             {budgets.map((budget) => {
               const actual = transactions
                 .filter((t) => t.category === budget.category)
@@ -370,7 +427,7 @@ export default function Home() {
 
               if (actual > budget.amount) {
                 return (
-                  <p key={budget._id?.toString()} className="text-red-500">
+                  <p key={budget._id?.toString()} className="text-red-500 font-bold">
                     Overspending in {budget.category}: ₹{(actual - budget.amount).toFixed(2)} over budget.
                   </p>
                 );

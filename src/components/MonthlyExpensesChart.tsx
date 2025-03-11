@@ -22,11 +22,11 @@ export default function MonthlyExpensesChart({ transactions }: { transactions: T
   }));
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data}>
+    <ResponsiveContainer width="100%" height={300} >
+      <BarChart  data={data}>
         <XAxis dataKey="month" />
         <YAxis />
-        <Tooltip />
+        <Tooltip contentStyle={{ backgroundColor: '#2f2b75', border: 'none' }} />
         <Bar dataKey="amount" fill="#8884d8" />
       </BarChart>
     </ResponsiveContainer>

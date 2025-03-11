@@ -8,20 +8,16 @@ type Params = {
     id: string;
 };
 
-export async function PUT(
-    request: Request,
-    { params }: { params: Promise<Params> } // Align with Next.js's expected type
-) {
-    const resolvedParams = await params; // Await the params promise
-    const { id } = resolvedParams; // Access `params` after resolving the promise
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
+    const { id } = params;
     const { amount, date, description, category } = await request.json();
 
     try {
         const client = await clientPromise;
         const db = client.db();
-        const collection = db.collection<Transaction>('transactions');
+        const collection = db.collection('transactions');
 
-        // Convert id to ObjectId
+        // Convert the ID to an ObjectId
         const objectId = new ObjectId(id);
 
         // Update the transaction
@@ -31,13 +27,13 @@ export async function PUT(
         );
 
         if (result.matchedCount === 0) {
-            return NextResponse.json({ error: 'Transaction not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Transaction not found.' }, { status: 404 });
         }
 
-        return NextResponse.json(result, { status: 200 });
+        return NextResponse.json({ message: 'Transaction updated successfully.' }, { status: 200 });
     } catch (error) {
         console.error('Error updating transaction:', error);
-        return NextResponse.json({ error: 'Failed to update transaction' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to update transaction.' }, { status: 500 });
     }
 }
 

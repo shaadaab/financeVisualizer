@@ -46,11 +46,11 @@ export default function BudgetForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <Label>Category</Label>
+                <Label className="mb-2">Category</Label>
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full p-2 border rounded bg-gray-700 text-gray-100"
+                    className="w-full p-2 border rounded bg-gray-900 text-gray-100"
                 >
                     <option value="">Select a category</option>
                     <option value="Food">Food</option>
@@ -61,7 +61,7 @@ export default function BudgetForm({
                 </select>
             </div>
             <div>
-                <Label>Amount</Label>
+                <Label className="mb-2">Amount</Label>
                 <Input
                     type="number"
                     value={amount}
@@ -71,7 +71,7 @@ export default function BudgetForm({
                 />
             </div>
             <div>
-                <Label>Month</Label>
+                <Label className="mb-2">Month</Label>
                 <Input
                     type="month"
                     value={month}
@@ -80,7 +80,7 @@ export default function BudgetForm({
                 />
             </div>
             {error && <p className="text-red-500">{error}</p>}
-            <Button type="submit">Add Budget</Button>
+            <Button type="submit"  className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer">Add Budget</Button>
         </form>
     );
 }

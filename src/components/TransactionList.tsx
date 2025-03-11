@@ -26,13 +26,13 @@ export default function TransactionList({
           <div className="flex gap-2">
             <button
               onClick={() => onEdit(transaction)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 hover:cursor-pointer"
             >
               Edit
             </button>
             <button
               onClick={() => onDelete(transaction._id?.toString() || '')}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 hover:cursor-pointer"
             >
               Delete
             </button>

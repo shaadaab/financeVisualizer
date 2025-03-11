@@ -1,10 +1,10 @@
 "use client";
 
-import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell, Legend } from 'recharts';
 import { Transaction } from '@/models/Transaction';
 
 // Define colors for each category
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF'];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7b38b5'];
 
 export default function CategoryPieChart({ transactions }: { transactions: Transaction[] }) {
     // Group transactions by category
@@ -41,6 +41,7 @@ export default function CategoryPieChart({ transactions }: { transactions: Trans
                     ))}
                 </Pie>
                 <Tooltip />
+                <Legend iconType="square" /> 
             </PieChart>
         </ResponsiveContainer>
     );

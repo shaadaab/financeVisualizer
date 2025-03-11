@@ -52,6 +52,9 @@ export default function TransactionForm({
             return;
         }
 
+        // Convert date from DD/MM/YYYY to YYYY-MM-DD for the API
+        const [day, month, year] = date.split('/');
+        const formattedDate = `${year}-${month}-${day}`;
 
         try {
             await onSubmit(e); // Call the onSubmit handler from props
@@ -70,7 +73,7 @@ export default function TransactionForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <Label>Amount</Label>
+                <Label className="mb-2">Amount</Label>
                 <Input
                     type="number"
                     value={amount}
@@ -80,7 +83,7 @@ export default function TransactionForm({
                 />
             </div>
             <div>
-                <Label>Date (DD/MM/YYYY)</Label>
+                <Label className="mb-2">Date</Label>
                 <Input
                     type="date"
                     value={formatDateForInput(date)} // Convert to YYYY-MM-DD for the input field
@@ -89,7 +92,7 @@ export default function TransactionForm({
                 />
             </div>
             <div>
-                <Label>Description</Label>
+                <Label className="mb-2">Description</Label>
                 <Input
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -98,11 +101,11 @@ export default function TransactionForm({
                 />
             </div>
             <div>
-                <Label>Category</Label>
+                <Label className="mb-2">Category</Label>
                 <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full p-2 border rounded bg-gray-700 text-gray-100"
+                    className="w-full p-2 border rounded bg-gray-900 text-gray-100"
                 >
                     <option value="">Select a category</option>
                     <option value="Food">Food</option>
@@ -113,7 +116,10 @@ export default function TransactionForm({
                 </select>
             </div>
             {error && <p className="text-red-500">{error}</p>}
-            <Button type="submit">
+            <Button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white hover:cursor-pointer"
+            >
                 {editingTransaction ? 'Update Transaction' : 'Add Transaction'}
             </Button>
         </form>
