@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { Transaction } from '@/models/Transaction';
 
-export async function GET(request: Request, context: { params: { category: string } }) {
-    // Await params before destructuring
-    const { category } = await context.params;
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ category: string }> } // Align with Next.js's expected type
+) {
+    const resolvedParams = await params; // Await the params promise
+    const { category } = resolvedParams; // Access `params` after resolving the promise
 
     try {
         const client = await clientPromise;
