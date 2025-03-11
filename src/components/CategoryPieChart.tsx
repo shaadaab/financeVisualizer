@@ -4,7 +4,7 @@ import { PieChart, Pie, Tooltip, ResponsiveContainer, Cell, Legend } from 'recha
 import { Transaction } from '@/models/Transaction';
 
 // Define colors for each category
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#7b38b5'];
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#943610', '#7b38b5'];
 
 export default function CategoryPieChart({ transactions }: { transactions: Transaction[] }) {
     // Group transactions by category

@@ -63,6 +63,7 @@ export default function Home() {
       alert('Failed to fetch monthly breakdown. Please try again.');
     }
   };
+
   // Fetch transactions from the API
   const fetchTransactions = async () => {
     try {
@@ -148,12 +149,35 @@ export default function Home() {
   };
 
   // Handle edit transaction
-  const handleEdit = (transaction: Transaction) => {
-    setEditingTransaction(transaction);
-    setAmount(transaction.amount.toString());
-    setDate(new Date(transaction.date).toLocaleDateString('en-GB')); // Format as DD/MM/YYYY
-    setDescription(transaction.description);
-    setCategory(transaction.category);
+  const handleEdit = async (updatedTransaction: Transaction) => {
+    try {
+      const response = await fetch(`/api/transactions/${updatedTransaction._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: updatedTransaction.amount,
+          date: updatedTransaction.date,
+          description: updatedTransaction.description,
+          category: updatedTransaction.category,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update transaction.');
+      }
+
+      // Update the transaction in the state
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) =>
+          transaction._id === updatedTransaction._id ? updatedTransaction : transaction
+        )
+      );
+      setRefreshKey((prev) => prev + 1); // Refresh the list
+      alert('Transaction updated successfully!');
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      alert('Failed to update transaction. Please try again.');
+    }
   };
 
   // Handle delete transaction
@@ -167,11 +191,14 @@ export default function Home() {
         throw new Error('Failed to delete transaction.');
       }
 
-      // Refresh transaction list
-      setRefreshKey((prev) => prev + 1); // Increment refreshKey to trigger a refresh
+      // Remove the transaction from the state
+      setTransactions((prevTransactions) =>
+        prevTransactions.filter((transaction) => transaction._id?.toString() !== id)
+      );
+      setRefreshKey((prev) => prev + 1); // Refresh the list
       alert('Transaction deleted successfully!');
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
       alert('Failed to delete transaction. Please try again.');
     }
   };
@@ -243,7 +270,7 @@ export default function Home() {
           {/* Category Breakdown Card */}
           <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
             <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Category Breakdown</h2>
-            <ul className="space-y-2 md:space-y-3"> {/* Reduced gap */}
+            <ul className="space-y-2 md:space-y-3">
               {/* Header Row */}
               <li className="grid grid-cols-2 gap-4 font-semibold text-gray-400 pb-2 md:pb-4 border-b border-gray-700">
                 <span>Category</span>
@@ -252,7 +279,7 @@ export default function Home() {
 
               {/* Category Rows */}
               {Object.entries(categoryBreakdown).map(([category, amount]) => (
-                <li key={category} className="grid grid-cols-2 gap-4 items-center py-1 md:py-2"> {/* Reduced padding */}
+                <li key={category} className="grid grid-cols-2 gap-4 items-center py-1 md:py-2">
                   <span className="truncate">{category}</span>
                   <div className="flex items-center justify-end gap-2 md:gap-3">
                     <span
@@ -345,7 +372,6 @@ export default function Home() {
               ))}
             </ul>
           </div>
-
         </div>
       </div>
 
@@ -388,7 +414,11 @@ export default function Home() {
         {/* Transaction List */}
         <div className="p-6 md:p-8 rounded-2xl shadow-md border border-gray-700">
           <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">Transactions List</h2>
-          <TransactionList transactions={transactions} onEdit={handleEdit} onDelete={handleDelete} />
+          <TransactionList
+            transactions={transactions}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
         </div>
 
         {/* Charts */}
@@ -411,7 +441,7 @@ export default function Home() {
             <BudgetVsActualChart transactions={transactions} budgets={budgets} />
             <button
               onClick={handleResetAllBudgets}
-              className="mt-4 w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700"
+              className="mt-4 w-full bg-blue-600 text-white py-2 md:py-3 rounded-md hover:bg-blue-700 hover:cursor-pointer"
             >
               Reset All Budgets
             </button>
@@ -427,8 +457,9 @@ export default function Home() {
 
               if (actual > budget.amount) {
                 return (
-                  <p key={budget._id?.toString()} className="text-red-500 font-bold">
-                    Overspending in {budget.category}: ₹{(actual - budget.amount).toFixed(2)} over budget.
+                  <p key={budget._id?.toString()} className="text-gray-400 font-bold">
+                    Overspending in {budget.category}:{' '}
+                    <span className="text-red-500">₹{(actual - budget.amount).toFixed(2)}</span> over budget.
                   </p>
                 );
               }

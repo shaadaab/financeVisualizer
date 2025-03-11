@@ -68,8 +68,8 @@ export default function BudgetVsActualChart({
                 <YAxis />
                 <Tooltip content={<CustomTooltip />} contentStyle={{ backgroundColor: '#2f2b75', border: 'none' }} />
                 <Legend />
-                <Bar dataKey="budget" fill="#8884d8" name="Budget" />
-                <Bar dataKey="actual" fill="#82ca9d" name="Actual Spending" />
+                <Bar dataKey="budget" fill="#55b54e" name="Budget" />
+                <Bar dataKey="actual" fill="#d1130d" name="Actual Spending" />
 
             </BarChart>
         </ResponsiveContainer>
