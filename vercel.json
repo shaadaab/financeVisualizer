@@ -1,0 +1,7 @@
+{
+    "functions": {
+        "api/transactions.js": {
+            "maxDuration": 30
+        }
+    }
+}
