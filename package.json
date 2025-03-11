@@ -21,7 +21,8 @@
     "recharts": "^2.15.1",
     "shadcn-ui": "^0.9.5",
     "tailwind-merge": "^3.0.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "vercel": "^41.3.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
