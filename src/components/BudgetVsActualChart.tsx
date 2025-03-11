@@ -8,9 +8,20 @@ import {
     Legend,
 } from 'recharts';
 import { Transaction, Budget } from '@/models/Transaction';
+import { TooltipProps } from 'recharts';
 
+type TooltipData = {
+    month: string;
+    category: string;
+    budget: number;
+    actual: number;
+};
+
+type CustomTooltipProps = TooltipProps<number, string> & {
+    payload?: { payload: TooltipData }[];
+};
 // Custom Tooltip Component
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
         const data = payload[0].payload; // Get the data for the hovered bar
         return (
@@ -59,7 +70,7 @@ export default function BudgetVsActualChart({
                 <Legend />
                 <Bar dataKey="budget" fill="#8884d8" name="Budget" />
                 <Bar dataKey="actual" fill="#82ca9d" name="Actual Spending" />
-                
+
             </BarChart>
         </ResponsiveContainer>
     );
